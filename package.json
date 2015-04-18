@@ -1,0 +1,9 @@
+{
+    "name": "node-maker",
+    "main": "template.js",
+    "version": "0.0.1",
+    "license": "ISC",
+    "dependencies": {
+        
+    }
+}
