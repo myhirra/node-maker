@@ -8,6 +8,7 @@ var fs = require('fs'),
 	path = require('path'),
 	child_process = require('child_process'),
 	dateFormat = require('./libs/date').format,
+	clipboard = require('copy-paste'),
 	getUserInfo = require('./libs/svn').getUserInfo;
 
 var TEMP_PATH = __dirname + '/templates/',
@@ -23,6 +24,7 @@ function Template(opt) {
 Template.prototype._init = function(opt) {
 	opt = opt || {};
 	opt.tempPath = opt.tempPath || TEMP_PATH;
+	opt.codesPath = opt.codesPath || '';
 	opt.dirPath = opt.dirPath || DIR_PATH;
 
 	this.data = opt.data || {};
@@ -30,7 +32,7 @@ Template.prototype._init = function(opt) {
 };
 
 /**
- * 真正的创建函数
+ * 真正的创建函数，创建文件
  */
 Template.prototype.create = function() {
 	var self = this,
@@ -41,6 +43,27 @@ Template.prototype.create = function() {
 		self._write(result, function() {
 
 		})
+	})
+};
+
+/**
+ * 将模板里的文件给copy到剪切板
+ */
+Template.prototype.copy = function(name, callback) {
+	var self = this,
+		codesPath = this.opt.codesPath,
+		filepath = codesPath + '/' + name + '.tpl';
+
+	fs.readFile(filepath, 'utf-8', function(err, content) {
+		if (!err) {
+			var result = self._parse(content);
+			clipboard.copy(result.body, function() {
+				console.log('复制成功，请键入commond+v粘贴');
+				callback && callback();
+			});
+		}else{
+			console.log(err);
+		}
 	})
 };
 
